@@ -1,0 +1,23 @@
+{
+  "iphone": [
+    { "produktnavn": "iPhone 16 Pro Max", "pris": "16390" },
+    { "produktnavn": "iPhone 16 Pro", "pris": "14990" },
+    { "produktnavn": "iPhone 16", "pris": "11990" },
+    { "produktnavn": "iPhone 16 Plus", "pris": "13490" },
+    { "produktnavn": "iPhone 16e", "pris": "8990" }
+    
+  ],
+  "macbook": [
+    { "produktnavn": "MacBook Air 13\" (M3)", "pris": "14990" },
+    { "produktnavn": "MacBook Air 15\" (M3)", "pris": "17490" },
+    { "produktnavn": "MacBook Pro 14\" (M3 Pro)", "pris": "23990" },
+    { "produktnavn": "MacBook Pro 16\" (M3 Max)", "pris": "38990" }
+  ],
+  "ipad": [
+    { "produktnavn": "iPad 10. gen (2022)", "pris": "5490" },
+    { "produktnavn": "iPad Air 11\" (M2)", "pris": "8490" },
+    { "produktnavn": "iPad Pro 11\" (M4)", "pris": "13990" },
+    { "produktnavn": "iPad Pro 13\" (M4)", "pris": "17490" },
+    { "produktnavn": "iPad mini", "pris": "6990" }
+  ]
+}

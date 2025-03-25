@@ -30,7 +30,7 @@
 <body>
 
     <div class="container">
-        <h1>Finn Apple-enhet ved hjelp av AI</h1>
+        <h1>Finn din perfekte Apple-enhet 🍏</h1>
 
         <div class="mb-3">
             <label class="form-label">Hva er ditt budsjett? (NOK):</label>
@@ -94,16 +94,7 @@
 
         <div id="correction-section" style="display:none;">
             <label class="form-label">Hva ville du valgt?</label>
-            <select id="riktigEnhet" class="form-select">
-                <option value="iPhone 16 Pro Max">iPhone 16 Pro Max</option>
-                <option value="iPhone 16 Pro">iPhone 16 Pro</option>
-                <option value="iPhone 16">iPhone 16 Plus</option>
-                <option value="iPhone 16">iPhone 16</option>
-                <option value="iPhone 16">iPhone 16e</option>
-                <option value="MacBook Air 13&quot; (M4)">MacBook Air 13" (M4)</option>
-                <option value="MacBook Air 15&quot; (M4)">MacBook Air 15" (M4)</option>
-                <option value="iPad Air 11&quot; (M3)">iPad Air 11" (M3)</option>
-            </select>
+            <select id="riktigEnhet" class="form-select"></select>
             <button class="btn btn-primary mt-2" onclick="sendFeedback('bad')">Lagre korrigering</button>
         </div>
     </div>
@@ -176,6 +167,24 @@
                 alert(response.message);
             });
         }
+
+        fetch("apple_products.json")
+    .then(res => res.json())
+    .then(data => {
+        const select = document.getElementById("riktigEnhet");
+        for (const kategori in data) {
+            const optgroup = document.createElement("optgroup");
+            optgroup.label = kategori.charAt(0).toUpperCase() + kategori.slice(1);
+            data[kategori].forEach(item => {
+                const option = document.createElement("option");
+                option.value = item.produktnavn;
+                option.textContent = `${item.produktnavn} – kr ${item.pris}`;
+                optgroup.appendChild(option);
+            });
+            select.appendChild(optgroup);
+        }
+    })
+    .catch(error => console.error("❌ Feil ved henting av produkter:", error));
     </script>
 
 </body>
