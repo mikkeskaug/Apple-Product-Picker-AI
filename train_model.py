@@ -1,43 +1,64 @@
 import pandas as pd
+import json
 import os
+import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-import pickle
 
-# Last inn opprinnelig datasett
-data = {
-    "budget": [16000, 15000, 14000, 13000, 12000, 18000, 35000, 9000, 8000, 13000],
-    "performance": [10, 10, 7, 7, 6, 9, 10, 6, 5, 7],
-    "battery": [9, 8, 9, 8, 7, 9, 10, 7, 6, 9],
-    "size": [1, 0, 1, 0, 1, 1, 1, 0, 0, 1],
-    "camera": [9, 9, 7, 7, 6, 9, 10, 5, 4, 7],
-    "storage": [256, 256, 128, 128, 128, 512, 1024, 128, 128, 128],
-    "device": [
-        "iPhone 16 Pro Max", "iPhone 16 Pro", "iPhone 16", "iPhone 16e",
-        "MacBook Air 15\" (M4)", "MacBook Pro 16\" (M4 Max)",
-        "iPad Air 11\" (M3)", "iPad 11th Gen", "iPhone 16 Plus"
-    ]
-}
-
-df = pd.DataFrame(data)
-
-# ✅ Hvis vi har brukerfeedback, legg den til
 USER_FEEDBACK_FILE = "user_feedback.csv"
-if os.path.exists(USER_FEEDBACK_FILE):
-    user_df = pd.read_csv(USER_FEEDBACK_FILE)
-    df = pd.concat([df, user_df], ignore_index=True)
+PRODUCT_FILE = "apple_products.json"
 
-# Tren AI-en med både original + brukerdata
+# 🚀 Last inn produkter
+with open(PRODUCT_FILE, "r", encoding="utf-8") as f:
+    apple_data = json.load(f)
+
+# 🔄 Bygg treningsdata
+rows = []
+
+for kategori, produkter in apple_data.items():
+    for produkt in produkter:
+        rows.append({
+            "budget": int(produkt["pris"]),
+            "performance": 8 if "Pro" in produkt["produktnavn"] else 5,
+            "battery": 8,
+            "size": 1 if "Max" in produkt["produktnavn"] or "15" in produkt["produktnavn"] else 0,
+            "camera": 9 if "Pro" in produkt["produktnavn"] else 6,
+            "storage": 256,
+            "device": produkt["produktnavn"]
+        })
+
+df = pd.DataFrame(rows)
+
+# ➕ Legg til feedback hvis det finnes
+if os.path.exists(USER_FEEDBACK_FILE):
+    feedback = pd.read_csv(USER_FEEDBACK_FILE)
+    df = pd.concat([df, feedback], ignore_index=True)
+
+# 🧹 Fjern rader med manglende data
+df = df.dropna()
+
+# ✅ Sjekk datatyper
+print("📊 Datatyper før trening:")
+print(df.dtypes)
+
+# 🔁 Trening
 X = df.drop(columns=["device"])
 y = df["device"]
+
+print("🔍 Trener modellen på følgende antall rader:", len(df))
+print("📈 Produkter:", df["device"].unique())
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
 
-# Lagre den oppdaterte AI-modellen
-with open("device_recommendation_model.pkl", "wb") as file:
-    pickle.dump(model, file)
+# 💾 Lagre modell
+with open("device_recommendation_model.pkl", "wb") as f:
+    pickle.dump(model, f)
 
-print("✅ AI er nå oppdatert med ny brukerdata!")
+print("✅ Modell trent og lagret.")
+
